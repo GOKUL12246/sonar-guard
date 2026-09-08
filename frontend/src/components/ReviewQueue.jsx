@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 export default function ReviewQueue({ contacts, places, onVerify, verifyingId }) {
   const [filter, setFilter] = useState('pending');
 
@@ -44,6 +46,13 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
         const natVal = Number(c.natural_score) || (100 - artVal);
         const place = places[c.anomaly_id] ?? 'Resolving WGS-84 position…';
         const imgName = c.source_image || '';
+        const imgSrc = c.thumbnail_b64
+          ? (c.thumbnail_b64.startsWith('data:') ? c.thumbnail_b64 : `data:image/jpeg;base64,${c.thumbnail_b64}`)
+          : c.image_b64
+          ? (c.image_b64.startsWith('data:') ? c.image_b64 : `data:image/jpeg;base64,${c.image_b64}`)
+          : imgName && imgName.endsWith('.jpg')
+          ? `${API_BASE}/api/dataset/image/train/${imgName}`
+          : null;
 
         return (
           <details key={c.anomaly_id} className="review-item" open={filter === 'pending'}>
@@ -57,18 +66,36 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
             <div className="review-body">
               <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
                 {/* Sonar Thumbnail Preview */}
-                {imgName && imgName.endsWith('.jpg') && (
-                  <div style={{ width: '130px', height: '110px', background: '#0a1930', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
+                <div
+                  style={{
+                    width: '135px',
+                    height: '110px',
+                    background: '#0b192e',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                    border: '1px solid #1e3a8a',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {imgSrc ? (
                     <img
-                      src={`/api/dataset/image/train/${imgName}`}
-                      alt={imgName}
+                      src={imgSrc}
+                      alt={imgName || 'Sonar Contact'}
                       onError={(e) => {
                         e.target.style.display = 'none';
                       }}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.72rem', padding: '0.3rem' }}>
+                      <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: '2px' }}>SSS TARGET</div>
+                      <div style={{ color: '#cbd5e1' }}>{c.class || 'Contact'}</div>
+                    </div>
+                  )}
+                </div>
                 <div style={{ flex: 1, minWidth: '220px' }}>
                   <div style={{ fontSize: '0.92rem', marginBottom: '4px' }}>
                     <b>{place}</b>

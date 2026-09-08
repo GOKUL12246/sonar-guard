@@ -248,6 +248,12 @@ def analyze_image(
         }
         saved_path = pipe["report_gen"].save_json(rep)
         saved_reports.append(Path(saved_path).name)
+        # Crisp bounding box thumbnail for operator review queue
+        bx1, by1 = max(0, int(det.bbox.x1) - 15), max(0, int(det.bbox.y1) - 15)
+        bx2, by2 = min(annotated.shape[1], int(det.bbox.x2) + 15), min(annotated.shape[0], int(det.bbox.y2) + 15)
+        crop_target = annotated[by1:by2, bx1:bx2] if (bx2 > bx1 and by2 > by1) else annotated
+        thumb_b64 = _encode_jpeg(crop_target, quality=75, max_dim=220)
+
         c_dict = {
             "anomaly_id": str(rep.get("anomaly_id", f"AUD-{session_tag}")),
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -265,6 +271,7 @@ def analyze_image(
             "verification_status": "unverified",
             "notes": f"Sonar contact identified in {filename}",
             "source_image": filename,
+            "thumbnail_b64": thumb_b64,
         }
         contacts.append(c_dict)
 
