@@ -135,6 +135,12 @@ def analyze_image(
 
     session_tag = uuid.uuid4().hex[:8]
 
+    # Normalize max dimension to 1024px to ensure sub-second latency on cloud CPU
+    h, w = source_img.shape[:2]
+    if max(h, w) > 1024:
+        scale = 1024.0 / float(max(h, w))
+        source_img = cv2.resize(source_img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
+
     t0 = time.perf_counter()
     prep_res = pipe["preprocessor"].process(source_img, image_id=filename, record_stages=True)
     t_prep_ms = (time.perf_counter() - t0) * 1000
@@ -261,11 +267,18 @@ def analyze_image(
             "source_image": filename,
         }
         contacts.append(c_dict)
-        try:
-            from backend.db import mongo_db
-            mongo_db.save_contact(c_dict)
-        except Exception:
-            pass
+
+    # Save to MongoDB Atlas asynchronously in background so HTTP response is instant
+    if contacts:
+        def _bg_save(contact_list):
+            try:
+                from backend.db import mongo_db
+                for c in contact_list:
+                    mongo_db.save_contact(c)
+            except Exception:
+                pass
+        import threading
+        threading.Thread(target=_bg_save, args=(list(contacts),), daemon=True).start()
 
     decisions = [
         {"detection_id": d.detection_id, "accepted": d.accepted,
