@@ -1,0 +1,2 @@
+﻿# SONAR-GUARD: scoring package
+

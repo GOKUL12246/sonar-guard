@@ -1,0 +1,13 @@
+{
+  "model": "models\\yolo\\ghost_pot_yolov8n_best.pt",
+  "split": "test",
+  "images_processed": 398,
+  "total_time_s": 6.145,
+  "average_wall_time_ms_per_image": 15.441,
+  "average_wall_time_fps": 64.763,
+  "ultralytics_speed_ms_per_image": {
+    "preprocess": 0.3536,
+    "inference": 6.9162,
+    "postprocess": 0.0947
+  }
+}

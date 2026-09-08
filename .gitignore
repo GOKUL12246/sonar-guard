@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# Node / React
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+
+# PyTorch / model weights (exclude huge runs, keep models/yolo weights)
+runs/
+!models/yolo/*.pt
+
+
+# Dataset (large binary files — do not commit raw data)
+data/raw/
+data/processed/
+data/train/
+data/val/
+data/test/
+data/verified/
+
+# Outputs
+outputs/detections/
+outputs/masks/
+outputs/reports/
+outputs/visualizations/
+logs/
+
+# YOLO run outputs
+runs/
+
+# Streamlit
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment
+.env
+.env.local
+*.env
+
+# pytest
+.pytest_cache/
+htmlcov/
+.coverage
+

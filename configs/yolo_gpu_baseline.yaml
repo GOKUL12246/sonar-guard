@@ -1,0 +1,19 @@
+# SONAR-GUARD GPU YOLOv8 baseline configuration
+# Training is intentionally not executed on the current CPU-only machine.
+model: yolov8n.pt
+model_variant: yolov8n
+dataset: data/yolo/data.yaml
+epochs: 50
+image_size: 640
+batch_size: 16
+device: cuda
+seed: 42
+workers: 4
+output_dir: outputs/yolo_runs_gpu_baseline
+class_names:
+  - Crab-Pot
+class_ids:
+  Crab-Pot: 0
+
+# PowerShell command on a CUDA-enabled machine:
+# python -m src.training.train_yolo --dataset data\yolo\data.yaml --model-size n --epochs 50 --img-size 640 --batch 16 --device cuda --workers 4 --seed 42 --output-dir outputs\yolo_runs_gpu_baseline --log-level INFO

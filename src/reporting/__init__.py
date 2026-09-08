@@ -1,0 +1,2 @@
+﻿# SONAR-GUARD: reporting package
+

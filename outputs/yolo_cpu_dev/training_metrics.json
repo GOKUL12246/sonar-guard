@@ -1,0 +1,11 @@
+{
+  "metrics/precision(B)": 0.20135552151207364,
+  "metrics/recall(B)": 0.19523809523809524,
+  "metrics/mAP50(B)": 0.09689655938100646,
+  "metrics/mAP50-95(B)": 0.02483662007041384,
+  "fitness": 0.02483662007041384,
+  "training_time_s": 403.37,
+  "device_used": "cpu",
+  "epochs_trained": 5,
+  "model_size": "n"
+}

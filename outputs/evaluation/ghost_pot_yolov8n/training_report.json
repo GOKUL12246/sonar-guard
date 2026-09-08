@@ -1,0 +1,93 @@
+{
+  "model": {
+    "variant": "YOLOv8n",
+    "pretrained_weights": "yolov8n.pt",
+    "class_names": ["Crab-Pot"],
+    "class_ids": {"Crab-Pot": 0}
+  },
+  "dataset": {
+    "yaml": "data/yolo/data.yaml",
+    "train_images": 5721,
+    "validation_images": 555,
+    "test_images": 398,
+    "train_annotations": 7469,
+    "validation_annotations": 1275,
+    "test_annotations": 567
+  },
+  "training_configuration": {
+    "epochs": 1,
+    "image_size": 160,
+    "batch_size": 128,
+    "device": "cpu",
+    "workers": 0,
+    "seed": 42,
+    "fraction": 1.0,
+    "optimizer": "auto"
+  },
+  "hardware": {
+    "torch": "2.0.1+cpu",
+    "ultralytics": "8.4.11",
+    "cuda_available": false,
+    "processor": "13th Gen Intel Core i5-1334U"
+  },
+  "training_duration_s": 247.4,
+  "training_history": {
+    "train_box_loss": 3.26411,
+    "train_classification_loss": 3.12722,
+    "train_dfl_loss": 1.27511,
+    "training_validation_precision": 0.00136,
+    "training_validation_recall": 0.06353,
+    "training_validation_map50": 0.00078,
+    "training_validation_map50_95": 0.00022
+  },
+  "independent_validation_at_confidence_0_25": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "map50": 0.0,
+    "map50_95": 0.0,
+    "evaluation_time_s": 9.21
+  },
+  "independent_test_at_confidence_0_25": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "map50": 0.0,
+    "map50_95": 0.0,
+    "evaluation_time_s": 7.92,
+    "images_processed": 398,
+    "ground_truth_instances": 567,
+    "predicted_boxes": 0
+  },
+  "inference_timing": {
+    "test_images": 398,
+    "total_time_s": 6.145,
+    "average_wall_time_ms_per_image": 15.441,
+    "average_wall_time_fps": 64.763,
+    "ultralytics_preprocess_ms_per_image": 0.3536,
+    "ultralytics_inference_ms_per_image": 6.9162,
+    "ultralytics_postprocess_ms_per_image": 0.0947
+  },
+  "checkpoints": {
+    "best_model": "models/yolo/ghost_pot_yolov8n_best.pt",
+    "last_model": "models/yolo/ghost_pot_yolov8n_last.pt",
+    "source_best_checkpoint": "runs/detect/outputs/yolo_runs_cpu_smoke1/sonarguard_yolo/weights/best.pt",
+    "source_last_checkpoint": "runs/detect/outputs/yolo_runs_cpu_smoke1/sonarguard_yolo/weights/last.pt"
+  },
+  "artifacts": {
+    "training_curves": "runs/detect/outputs/yolo_runs_cpu_smoke1/sonarguard_yolo/results.png",
+    "training_history_csv": "runs/detect/outputs/yolo_runs_cpu_smoke1/sonarguard_yolo/results.csv",
+    "confusion_matrix": "runs/detect/outputs/evaluation/ghost_pot_yolov8n/eval_test/confusion_matrix.png",
+    "precision_recall_curve": "runs/detect/outputs/evaluation/ghost_pot_yolov8n/eval_test/BoxPR_curve.png",
+    "test_prediction_visualizations": "runs/detect/outputs/evaluation/ghost_pot_yolov8n/test_predictions"
+  },
+  "failure_analysis": {
+    "false_positives_at_confidence_0_25": 0,
+    "false_negatives_at_confidence_0_25": "All 567 ground-truth instances had no predicted box because the model produced zero test predictions.",
+    "interpretation": "This is a one-epoch, 160px CPU smoke baseline and is not a useful production detector yet."
+  },
+  "warnings": [
+    "The initial 640px and 320px CPU attempts were stopped because measured throughput projected impractical multi-hour runtimes; they produced no completed metrics.",
+    "The completed wrapper run trained successfully, but its original bookkeeping path expected outputs/yolo_runs_cpu_smoke1 while Ultralytics wrote under runs/detect/outputs/yolo_runs_cpu_smoke1. The checkpoints were preserved and the wrapper was corrected afterward.",
+    "FPS is reported as a measured batch inference timing only; no real-time performance claim is made.",
+    "The one-epoch smoke baseline should not be treated as a reliable final model."
+  ]
+}

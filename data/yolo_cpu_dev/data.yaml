@@ -1,0 +1,6 @@
+path: D:\sih1\data\yolo_cpu_dev
+train: images/train
+val: images/val
+nc: 1
+names:
+- Crab-Pot

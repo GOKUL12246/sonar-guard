@@ -1,0 +1,59 @@
+[
+  {
+    "image": "Contact_415_sslo_png_jpg.rf.bbeb3d7be07904d6c118bfa33c66b8f2.jpg",
+    "detections": 0,
+    "boxes": [],
+    "output": "outputs\\yolo_cpu_dev\\inference_samples\\sample_01_Contact_415_sslo_png_jpg.rf.bb.jpg"
+  },
+  {
+    "image": "Contact_50_sslo_png_jpg.rf.f8a7789f05edcf93ec874a0cefb5b797.jpg",
+    "detections": 0,
+    "boxes": [],
+    "output": "outputs\\yolo_cpu_dev\\inference_samples\\sample_02_Contact_50_sslo_png_jpg.rf.f8a.jpg"
+  },
+  {
+    "image": "Contact_241_sslo_png_jpg.rf.6a5c7f757a3498f1cf059991989873f7.jpg",
+    "detections": 2,
+    "boxes": [
+      {
+        "class": "Crab-Pot",
+        "conf": 0.174,
+        "bbox": [
+          305,
+          317,
+          326,
+          333
+        ]
+      },
+      {
+        "class": "Crab-Pot",
+        "conf": 0.1668,
+        "bbox": [
+          401,
+          384,
+          425,
+          409
+        ]
+      }
+    ],
+    "output": "outputs\\yolo_cpu_dev\\inference_samples\\sample_03_Contact_241_sslo_png_jpg.rf.6a.jpg"
+  },
+  {
+    "image": "Contact_416_sslo_png_jpg.rf.8d3e4e9eb435c8973b17f200016136c4.jpg",
+    "detections": 0,
+    "boxes": [],
+    "output": "outputs\\yolo_cpu_dev\\inference_samples\\sample_04_Contact_416_sslo_png_jpg.rf.8d.jpg"
+  },
+  {
+    "image": "Contact_295_sslo_png_jpg.rf.99e3d6f27fb7fb6e07382ee396ae9ddb.jpg",
+    "detections": 0,
+    "boxes": [],
+    "output": "outputs\\yolo_cpu_dev\\inference_samples\\sample_05_Contact_295_sslo_png_jpg.rf.99.jpg"
+  },
+  {
+    "image": "Contact_457_sslo_png_jpg.rf.4c7d8c6804250d08b46937d88baf72ce.jpg",
+    "detections": 0,
+    "boxes": [],
+    "output": "outputs\\yolo_cpu_dev\\inference_samples\\sample_06_Contact_457_sslo_png_jpg.rf.4c.jpg"
+  }
+]

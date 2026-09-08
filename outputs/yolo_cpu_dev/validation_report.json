@@ -1,0 +1,15 @@
+{
+  "status": "CPU_DEVELOPMENT_SMOKE_TRAINING",
+  "not": "PRODUCTION_MODEL",
+  "model": "outputs/yolo_cpu_dev/weights/yolov8n_cpu_dev_320_best.pt",
+  "val_data": "data/yolo_cpu_dev/data.yaml",
+  "conf_threshold": 0.25,
+  "iou_threshold": 0.45,
+  "device": "cpu",
+  "val_images": 80,
+  "precision": 0.5556,
+  "recall": 0.0238,
+  "mAP50": 0.2898,
+  "mAP50_95": 0.1089,
+  "interpretation": "Low accuracy is expected. This is a 5-epoch, 320px, 400-image CPU dev run. Purpose: verify Dataset\u2192YOLO\u2192Training\u2192Validation pipeline works. Full production training requires 50+ epochs, 640px, full dataset, CUDA GPU."
+}

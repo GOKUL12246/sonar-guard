@@ -1,0 +1,47 @@
+{
+  "source_annotations": "data\\processed\\annotations_cleaned",
+  "output_directory": "data\\yolo",
+  "data_yaml": "data\\yolo\\data.yaml",
+  "split_strategy": "preserved official cleaned train/valid/test split; deterministic copy order",
+  "random_seed_for_visualizations": 42,
+  "class_names": [
+    "Crab-Pot"
+  ],
+  "class_ids": {
+    "Crab-Pot": 0
+  },
+  "split_stats": {
+    "train": {
+      "images": 5721,
+      "annotations": 7469,
+      "empty_label_images": 1430,
+      "image_dimensions": {
+        "640x640": 5721
+      }
+    },
+    "val": {
+      "images": 555,
+      "annotations": 1275,
+      "empty_label_images": 53,
+      "image_dimensions": {
+        "640x640": 555
+      }
+    },
+    "test": {
+      "images": 398,
+      "annotations": 567,
+      "empty_label_images": 64,
+      "image_dimensions": {
+        "640x640": 398
+      }
+    }
+  },
+  "data_leakage_check": {
+    "source_groups_checked": 2139,
+    "groups_crossing_splits": 0,
+    "cross_split_groups": {}
+  },
+  "visualizations_generated": 10,
+  "validation_passed": true,
+  "original_jsonl_modified": false
+}

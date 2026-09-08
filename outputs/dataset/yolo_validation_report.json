@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "class_names": [
+    "Crab-Pot"
+  ],
+  "images_checked": 6674,
+  "labels_checked": 6674,
+  "annotations_checked": 9311,
+  "invalid_labels": 0,
+  "missing_images": 0,
+  "missing_labels": 0,
+  "malformed_labels": 0,
+  "empty_label_images": 1547,
+  "errors": []
+}
