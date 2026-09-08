@@ -59,6 +59,19 @@ app.add_middleware(
 )
 
 
+@app.get("/")
+@app.head("/")
+def root():
+    return {
+        "status": "online",
+        "service": "Underwater Ghost Net & Marine Debris Detection API",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "health": "/api/health",
+    }
+
+
+
 # ── Real Dataset & Contacts Loader (Zero Dummy Data) ──────────────────────────
 
 def _normalize_contact(item: dict) -> dict:
