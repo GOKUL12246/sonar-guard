@@ -1,64 +1,28 @@
-# SONAR-GUARD requirements.txt
-# Pinned to currently installed versions on this machine.
-# Python 3.11.9 | CPU only (torch+cpu build)
-#
-# Install:
-#   python -m venv .venv
-#   .venv\Scripts\activate
-#   pip install -r requirements.txt
+# SONAR-GUARD requirements.txt (Optimized for Cloud & Local Deployment)
 
-# ── Core ML ───────────────────────────────────────────────────────────────
-torch==2.0.1
-torchvision==0.15.2
-ultralytics==8.4.11
+# Core ML & Computer Vision
+torch>=2.0.0
+torchvision>=0.15.0
+ultralytics>=8.0.0
+opencv-python-headless>=4.8.0.76
+Pillow>=10.0.0
 
-# ── Computer Vision ───────────────────────────────────────────────────────
-opencv-contrib-python==4.9.0.80
-Pillow==11.3.0
+# Data & Scientific Computing
+numpy>=1.24.0,<2.0.0
+scipy>=1.11.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+scikit-learn>=1.3.0
+PyWavelets>=1.4.0
 
-# ── Data / Scientific ─────────────────────────────────────────────────────
-numpy==1.26.4
-scipy==1.17.0
-pandas==2.3.3
-scikit-learn==1.4.0
-PyWavelets==1.9.0
+# Geospatial & Database
+pyproj>=3.6.0
+pymongo>=4.6.0
+requests>=2.28.0
 
-# ── Geospatial ────────────────────────────────────────────────────────────
-pyproj==3.7.2
-
-# ── Database ──────────────────────────────────────────────────────────────
-pymongo==4.18.0          # MongoDB driver (optional — falls back to JSONL if unused)
-
-# ── Visualisation ─────────────────────────────────────────────────────────
-matplotlib==3.10.8
-seaborn==0.13.2
-
-# ── Dashboard ─────────────────────────────────────────────────────────────
-# (Streamlit removed — frontend is React in ./frontend)
-# (streamlit-folium removed with Streamlit)
-# (folium removed — maps are React-Leaflet in ./frontend)
-requests==2.28.1      # Nominatim reverse/forward geocoding (real place names)
-
-# ── Configuration ─────────────────────────────────────────────────────────
-PyYAML==6.0.3
-
-# ── File upload ───────────────────────────────────────────────────────────
-python-multipart==0.0.6
-
-# ── API backend (React frontend) ────────────────────────────────────
-fastapi==0.115.6
-uvicorn==0.34.0
-
-# ── Testing ───────────────────────────────────────────────────────────────
-pytest==7.4.3
-
-# ── Edge / ONNX deployment ────────────────────────────────────────────────
-onnxruntime==1.29.0      # CPU ONNX inference
-# onnxruntime-gpu        # Uncomment for GPU ONNX inference
-# tensorrt               # Optional: TensorRT acceleration (NVIDIA GPU required)
-
-# ── Optional (SAM) ────────────────────────────────────────────────────────
-# segment-anything       # pip install git+https://github.com/facebookresearch/segment-anything.git
-# Requires checkpoint download + GPU/sufficient RAM
-
-
+# Web API & Server
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+python-multipart>=0.0.6
+PyYAML>=6.0
