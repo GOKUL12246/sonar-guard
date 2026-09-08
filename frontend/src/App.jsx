@@ -251,7 +251,7 @@ export default function App() {
       )}
 
       {tab === 'analysis' && (
-        <AnalysisStudio onAnalyzed={handleAnalyzed} defaultLat={center[0]} defaultLon={center[1]} />
+        <AnalysisStudio onAnalyzed={handleAnalyzed} savedResult={analysis} defaultLat={center[0]} defaultLon={center[1]} />
       )}
 
       {tab === 'map' && (

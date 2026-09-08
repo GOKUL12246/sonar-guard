@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { analyzeImage, parseMetadataFile } from '../api.js';
 
-export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defaultLon = 80.3400 }) {
+export default function AnalysisStudio({ onAnalyzed, savedResult = null, defaultLat = 13.1150, defaultLon = 80.3400 }) {
   const [file, setFile] = useState(null);
   const [metaFile, setMetaFile] = useState(null);
   const [metaStatus, setMetaStatus] = useState(null);
@@ -12,13 +12,19 @@ export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defau
   const [sonarRange, setSonarRange] = useState(50.0);
   const [heading, setHeading] = useState(142.0);
   const [running, setRunning] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(savedResult);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     setLat(defaultLat);
     setLon(defaultLon);
   }, [defaultLat, defaultLon]);
+
+  useEffect(() => {
+    if (savedResult) {
+      setResult(savedResult);
+    }
+  }, [savedResult]);
 
   const handleMetadataUpload = async (e) => {
     const mf = e.target.files?.[0];
