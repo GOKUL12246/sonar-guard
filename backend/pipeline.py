@@ -135,10 +135,10 @@ def analyze_image(
 
     session_tag = uuid.uuid4().hex[:8]
 
-    # Normalize max dimension to 1024px to ensure sub-second latency on cloud CPU
+    # Normalize max dimension to 640px (native YOLO resolution) for sub-second cloud processing
     h, w = source_img.shape[:2]
-    if max(h, w) > 1024:
-        scale = 1024.0 / float(max(h, w))
+    if max(h, w) > 640:
+        scale = 640.0 / float(max(h, w))
         source_img = cv2.resize(source_img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
 
     t0 = time.perf_counter()
@@ -350,11 +350,11 @@ def analyze_image(
     ]
 
     prep_stages_b64 = {
-        "00_raw": _encode_jpeg(source_img, quality=65, max_dim=220),
-        "01_grayscale": _encode_jpeg(prep_res.stages.get("01_grayscale", prep_res.original), quality=65, max_dim=220),
-        "02_median_denoised": _encode_jpeg(prep_res.stages.get("02_median_filter", prep_res.original), quality=65, max_dim=220),
-        "04_clahe_enhanced": _encode_jpeg(prep_res.stages.get("04_clahe", prep_res.preprocessed), quality=65, max_dim=220),
-        "05_final_preprocessed": _encode_jpeg(prep_res.preprocessed, quality=65, max_dim=220),
+        "00_raw": _encode_jpeg(source_img, quality=55, max_dim=160),
+        "01_grayscale": _encode_jpeg(prep_res.stages.get("01_grayscale", prep_res.original), quality=55, max_dim=160),
+        "02_median_denoised": _encode_jpeg(prep_res.stages.get("02_median_filter", prep_res.original), quality=55, max_dim=160),
+        "04_clahe_enhanced": _encode_jpeg(prep_res.stages.get("04_clahe", prep_res.preprocessed), quality=55, max_dim=160),
+        "05_final_preprocessed": _encode_jpeg(prep_res.preprocessed, quality=55, max_dim=160),
     }
 
     return {
@@ -366,9 +366,9 @@ def analyze_image(
         "t_det_ms": round(t_det_ms, 1),
         "model_name": pipe["model_name"],
         "model_classes": pipe["model_classes"],
-        "raw_image_b64": _encode_jpeg(source_img, quality=80, max_dim=640),
-        "preprocessed_image_b64": _encode_jpeg(prep_res.preprocessed, quality=80, max_dim=640),
-        "annotated_image_b64": _encode_jpeg(annotated, quality=80, max_dim=640),
+        "raw_image_b64": _encode_jpeg(source_img, quality=75, max_dim=580),
+        "preprocessed_image_b64": _encode_jpeg(prep_res.preprocessed, quality=75, max_dim=580),
+        "annotated_image_b64": _encode_jpeg(annotated, quality=75, max_dim=580),
         "contacts": contacts,
         "decisions": decisions,
         "stages": stages,
