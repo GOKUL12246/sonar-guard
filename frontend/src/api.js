@@ -1,9 +1,7 @@
-// Thin client for the SONAR-GUARD FastAPI backend.
-// All Nominatim traffic goes through the backend proxy (proper
-// User-Agent + 24h cache), so the browser needs zero API keys.
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export async function fetchContacts(limit = 500) {
-  const res = await fetch(`/api/contacts?limit=${limit}`);
+  const res = await fetch(`${API_BASE}/api/contacts?limit=${limit}`);
   if (!res.ok) throw new Error(`contacts failed: ${res.status}`);
   const data = await res.json();
   return data.contacts ?? [];
@@ -15,7 +13,7 @@ export async function reversePlace(lat, lon) {
   const key = `${Number(lat).toFixed(4)},${Number(lon).toFixed(4)}`;
   if (placeCache.has(key)) return placeCache.get(key);
   const promise = (async () => {
-    const res = await fetch(`/api/reverse?lat=${lat}&lon=${lon}`);
+    const res = await fetch(`${API_BASE}/api/reverse?lat=${lat}&lon=${lon}`);
     if (!res.ok) return `${Number(lat).toFixed(4)}, ${Number(lon).toFixed(4)}`;
     const data = await res.json();
     return data.place_name || data.display_name || key;
@@ -25,7 +23,8 @@ export async function reversePlace(lat, lon) {
 }
 
 export async function searchPlaces(query) {
-  const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+  const res = await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(query)}`);
+
   if (!res.ok) throw new Error(`search failed: ${res.status}`);
   const data = await res.json();
   return data.results ?? [];
@@ -35,7 +34,7 @@ export async function analyzeImage(file, params = {}) {
   const form = new FormData();
   form.append('file', file);
   for (const [k, v] of Object.entries(params)) form.append(k, String(v));
-  const res = await fetch('/api/analyze', { method: 'POST', body: form });
+  const res = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: form });
   if (!res.ok) {
     const detail = await res.text();
     throw new Error(`analysis failed: ${res.status} ${detail.slice(0, 200)}`);
@@ -44,7 +43,7 @@ export async function analyzeImage(file, params = {}) {
 }
 
 export async function submitVerification(anomalyId, decision, notes = '') {
-  const res = await fetch('/api/verify', {
+  const res = await fetch(`${API_BASE}/api/verify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ anomaly_id: anomalyId, decision, notes }),
@@ -57,19 +56,19 @@ export async function submitVerification(anomalyId, decision, notes = '') {
 }
 
 export async function fetchDatasetSummary() {
-  const res = await fetch('/api/dataset/summary');
+  const res = await fetch(`${API_BASE}/api/dataset/summary`);
   if (!res.ok) throw new Error(`dataset summary failed: ${res.status}`);
   return res.json();
 }
 
 export async function fetchDatasetSamples(split = 'train', limit = 30, offset = 0) {
-  const res = await fetch(`/api/dataset/samples?split=${split}&limit=${limit}&offset=${offset}`);
+  const res = await fetch(`${API_BASE}/api/dataset/samples?split=${split}&limit=${limit}&offset=${offset}`);
   if (!res.ok) throw new Error(`dataset samples failed: ${res.status}`);
   return res.json();
 }
 
 export async function processDatasetSample(payload) {
-  const res = await fetch('/api/dataset/process_sample', {
+  const res = await fetch(`${API_BASE}/api/dataset/process_sample`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -84,11 +83,12 @@ export async function processDatasetSample(payload) {
 export async function parseMetadataFile(file) {
   const form = new FormData();
   form.append('file', file);
-  const res = await fetch('/api/metadata/parse', { method: 'POST', body: form });
+  const res = await fetch(`${API_BASE}/api/metadata/parse`, { method: 'POST', body: form });
   if (!res.ok) {
     const detail = await res.text();
     throw new Error(`metadata parsing failed: ${res.status} ${detail.slice(0, 160)}`);
   }
   return res.json();
 }
+
 
