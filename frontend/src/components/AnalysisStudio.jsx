@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { analyzeImage, fetchDatasetSamples, processDatasetSample, parseMetadataFile } from '../api.js';
+import { analyzeImage, parseMetadataFile } from '../api.js';
 
 export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defaultLon = 80.3400 }) {
-  const [mode, setMode] = useState('upload'); // 'upload' | 'sample'
   const [file, setFile] = useState(null);
   const [metaFile, setMetaFile] = useState(null);
   const [metaStatus, setMetaStatus] = useState(null);
-  const [sampleList, setSampleList] = useState([]);
-  const [selectedSample, setSelectedSample] = useState(null);
   const [conf, setConf] = useState(0.16);
   const [iou, setIou] = useState(0.45);
   const [lat, setLat] = useState(defaultLat);
@@ -22,18 +19,6 @@ export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defau
     setLat(defaultLat);
     setLon(defaultLon);
   }, [defaultLat, defaultLon]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetchDatasetSamples('train', 20, 0);
-        setSampleList(res.samples || []);
-        if (res.samples?.length > 0) setSelectedSample(res.samples[0]);
-      } catch (err) {
-        console.error('Failed to load sample list:', err);
-      }
-    })();
-  }, []);
 
   const handleMetadataUpload = async (e) => {
     const mf = e.target.files?.[0];
@@ -55,39 +40,21 @@ export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defau
   };
 
   const runAnalysis = async () => {
+    if (!file) {
+      setError('Please select a Side-Scan Sonar (SSS) image file to upload.');
+      return;
+    }
     setRunning(true);
     setError(null);
     try {
-      let out;
-      if (mode === 'upload') {
-        if (!file) {
-          setError('Please select a Side-Scan Sonar (SSS) image file to upload.');
-          setRunning(false);
-          return;
-        }
-        out = await analyzeImage(file, {
-          conf,
-          iou,
-          latitude: Number(lat),
-          longitude: Number(lon),
-          sonar_range: Number(sonarRange),
-          heading: Number(heading),
-        });
-      } else {
-        if (!selectedSample) {
-          setError('Please select a training sample.');
-          setRunning(false);
-          return;
-        }
-        out = await processDatasetSample({
-          split: selectedSample.split || 'train',
-          filename: selectedSample.file_name,
-          conf,
-          iou,
-          latitude: Number(lat),
-          longitude: Number(lon),
-        });
-      }
+      const out = await analyzeImage(file, {
+        conf,
+        iou,
+        latitude: Number(lat),
+        longitude: Number(lon),
+        sonar_range: Number(sonarRange),
+        heading: Number(heading),
+      });
       setResult(out);
       if (onAnalyzed) onAnalyzed(out);
     } catch (e) {
@@ -100,80 +67,37 @@ export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defau
   return (
     <div>
       <div className="upload-hero">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
-          <div>
-            <h3 style={{ margin: 0, color: '#0f172a' }}>Side-Scan Sonar Analysis Studio</h3>
-            <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.82rem' }}>
-              Acoustic Preprocessing, YOLOv8 Object Detection, Metric Sizing, and Bayesian Evidence Scoring.
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button
-              className={mode === 'upload' ? 'tab active' : 'tab'}
-              onClick={() => setMode('upload')}
-              style={{ padding: '6px 14px', fontSize: '0.8rem' }}
-            >
-              Upload Sonar Image
-            </button>
-            <button
-              className={mode === 'sample' ? 'tab active' : 'tab'}
-              onClick={() => setMode('sample')}
-              style={{ padding: '6px 14px', fontSize: '0.8rem' }}
-            >
-              Select Real Training Sample
-            </button>
-          </div>
+        <div style={{ marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0, color: '#0f172a' }}>Side-Scan Sonar Analysis Studio</h3>
+          <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.82rem' }}>
+            Acoustic Signal Preprocessing, YOLOv8 Object Detection, Physical Metric Dimensions, and Bayesian Marine Risk Scoring.
+          </p>
         </div>
 
         {/* Input Controls Row */}
         <div className="upload-row" style={{ flexWrap: 'wrap', gap: '0.8rem' }}>
-          {mode === 'upload' ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, minWidth: '260px' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}>
-                1. Sonar Acoustic Image (.png, .jpg, .tif, .bmp)
-              </span>
-              <input
-                type="file"
-                accept=".png,.jpg,.jpeg,.tif,.tiff,.bmp"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              />
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, minWidth: '260px' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}>
-                Select Real Dataset Scan (from 5,721 images)
-              </span>
-              <select
-                style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
-                value={selectedSample?.file_name || ''}
-                onChange={(e) => {
-                  const s = sampleList.find((x) => x.file_name === e.target.value);
-                  if (s) setSelectedSample(s);
-                }}
-              >
-                {sampleList.map((s) => (
-                  <option key={s.id} value={s.file_name}>
-                    {s.file_name.split('.')[0]} ({s.num_objects} target{s.num_objects !== 1 ? 's' : ''}, {s.size_kb} KB)
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, minWidth: '260px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}>
+              1. Sonar Acoustic Image (.png, .jpg, .tif, .bmp)
+            </span>
+            <input
+              type="file"
+              accept=".png,.jpg,.jpeg,.tif,.tiff,.bmp"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            />
+          </div>
 
-          {/* Optional Metadata File Importer */}
-          {mode === 'upload' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '220px' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}>
-                2. Import Navigation / Metadata (.json, .csv, .xlsx)
-              </span>
-              <input
-                type="file"
-                accept=".json,.csv,.xlsx,.xls,.txt"
-                onChange={handleMetadataUpload}
-                style={{ padding: '5px', fontSize: '0.78rem' }}
-              />
-            </div>
-          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '220px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569' }}>
+              2. Optional Navigation File (.json, .csv, .xlsx)
+            </span>
+            <input
+              type="file"
+              accept=".json,.csv,.xlsx,.xls,.txt"
+              onChange={handleMetadataUpload}
+              style={{ padding: '5px', fontSize: '0.78rem' }}
+            />
+          </div>
 
           <label className="param">
             Min Confidence
@@ -228,7 +152,7 @@ export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defau
             />
           </label>
           <button className="primary" onClick={runAnalysis} disabled={running} style={{ alignSelf: 'flex-end' }}>
-            {running ? 'Processing Scan…' : 'Execute Neural Pipeline'}
+            {running ? 'Processing Fast Scan…' : 'Execute Neural Pipeline'}
           </button>
         </div>
 
@@ -255,32 +179,20 @@ export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defau
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-              {/* 1. Raw Sonar Image */}
-              <figure style={{ margin: 0, background: '#0a1930', padding: '8px', borderRadius: '12px', border: '1px solid #334155' }}>
-                <img
-                  src={`data:image/jpeg;base64,${result.raw_image_b64 || result.preprocessed_image_b64}`}
-                  alt="Raw Sonar"
-                  style={{ width: '100%', height: 'auto', borderRadius: '8px', display: 'block' }}
-                />
-                <figcaption style={{ color: '#bae6fd', fontSize: '0.78rem', marginTop: '6px', textAlign: 'center', fontWeight: 600 }}>
-                  STAGE 1: RAW ACOUSTIC SCAN
-                </figcaption>
-              </figure>
-
-              {/* 2. Preprocessed Sonar */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.2rem' }}>
+              {/* 1. Preprocessed Sonar */}
               <figure style={{ margin: 0, background: '#0a1930', padding: '8px', borderRadius: '12px', border: '1px solid #334155' }}>
                 <img
                   src={`data:image/jpeg;base64,${result.preprocessed_image_b64}`}
-                  alt="Preprocessed Sonar"
+                  alt="Enhanced Acoustic Scan"
                   style={{ width: '100%', height: 'auto', borderRadius: '8px', display: 'block' }}
                 />
                 <figcaption style={{ color: '#bae6fd', fontSize: '0.78rem', marginTop: '6px', textAlign: 'center', fontWeight: 600 }}>
-                  STAGE 2: FILTERED (Dropout Repair + Bilateral + CLAHE)
+                  STAGE 1: ENHANCED ACOUSTIC SCAN (Dropout Repair + Bilateral Filter + CLAHE)
                 </figcaption>
               </figure>
 
-              {/* 3. Neural Overlays */}
+              {/* 2. Neural Overlays */}
               <figure style={{ margin: 0, background: '#0a1930', padding: '8px', borderRadius: '12px', border: '1px solid #334155' }}>
                 <img
                   src={`data:image/jpeg;base64,${result.annotated_image_b64}`}
@@ -288,7 +200,7 @@ export default function AnalysisStudio({ onAnalyzed, defaultLat = 13.1150, defau
                   style={{ width: '100%', height: 'auto', borderRadius: '8px', display: 'block' }}
                 />
                 <figcaption style={{ color: '#bae6fd', fontSize: '0.78rem', marginTop: '6px', textAlign: 'center', fontWeight: 600 }}>
-                  STAGE 3: YOLOv8 DETECTIONS (Green = Confirmed · Red = Filtered)
+                  STAGE 2: YOLOv8 TARGET DETECTIONS (Green = Confirmed · Red = Filtered)
                 </figcaption>
               </figure>
             </div>

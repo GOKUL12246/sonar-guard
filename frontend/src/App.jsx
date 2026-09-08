@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import MapView from './components/MapView.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import AnalysisStudio from './components/AnalysisStudio.jsx';
-import DatasetExplorer from './components/DatasetExplorer.jsx';
 import ReviewQueue from './components/ReviewQueue.jsx';
 import Reports from './components/Reports.jsx';
 import { fetchContacts, reversePlace, searchPlaces, submitVerification } from './api.js';
@@ -13,7 +12,6 @@ const DEFAULT_CENTER = [13.1150, 80.3400];
 const TABS = [
   ['dashboard', 'Dashboard'],
   ['analysis', 'Analysis Studio'],
-  ['dataset', 'Training Data & Raw Scans'],
   ['map', 'Marine GIS Map'],
   ['review', 'Review Queue'],
   ['reports', 'Mission Reports'],
@@ -202,10 +200,6 @@ export default function App() {
 
       {tab === 'analysis' && (
         <AnalysisStudio onAnalyzed={handleAnalyzed} defaultLat={center[0]} defaultLon={center[1]} />
-      )}
-
-      {tab === 'dataset' && (
-        <DatasetExplorer onInspectSample={handleAnalyzed} />
       )}
 
       {tab === 'map' && (
