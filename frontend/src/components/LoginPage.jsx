@@ -58,23 +58,23 @@ export default function LoginPage({ onLogin }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#09090b',
-      backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 255, 255, 0.12), transparent), linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
-      backgroundSize: '100% 100%, 32px 32px, 32px 32px',
+      background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
+      backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(2, 132, 199, 0.08), transparent), linear-gradient(rgba(15, 62, 120, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 62, 120, 0.03) 1px, transparent 1px)',
+      backgroundSize: '100% 100%, 36px 36px, 36px 36px',
       fontFamily: "'Inter', -apple-system, sans-serif",
       padding: '1.5rem',
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Top subtle white ambient spotlight glow */}
+      {/* Top subtle ambient glow */}
       <div style={{
         position: 'absolute',
-        top: '-150px',
+        top: '-120px',
         left: '50%',
         transform: 'translateX(-50%)',
         width: '600px',
-        height: '350px',
-        background: 'radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%)',
+        height: '300px',
+        background: 'radial-gradient(circle, rgba(2, 132, 199, 0.12) 0%, transparent 70%)',
         filter: 'blur(50px)',
         pointerEvents: 'none',
       }} />
@@ -82,29 +82,30 @@ export default function LoginPage({ onLogin }) {
       <div style={{
         width: '100%',
         maxWidth: '460px',
-        background: 'rgba(18, 18, 20, 0.88)',
-        border: '1px solid rgba(255, 255, 255, 0.14)',
-        borderRadius: '20px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderTop: '5px solid #0f3e78',
+        borderRadius: '16px',
+        boxShadow: '0 20px 45px rgba(15, 62, 120, 0.1), 0 4px 12px rgba(0, 0, 0, 0.04)',
         padding: '2.4rem 2.2rem',
         position: 'relative',
         zIndex: 2,
-        backdropFilter: 'blur(20px)',
       }}>
         {/* Header Branding */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.8rem' }}>
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '58px',
-            height: '58px',
+            width: '60px',
+            height: '60px',
             borderRadius: '14px',
-            background: '#ffffff',
-            boxShadow: '0 0 30px rgba(255, 255, 255, 0.25)',
-            marginBottom: '1.2rem',
+            background: 'linear-gradient(135deg, #07172c 0%, #0f3e78 100%)',
+            border: '2px solid rgba(212, 175, 55, 0.4)',
+            boxShadow: '0 8px 20px rgba(15, 62, 120, 0.25)',
+            marginBottom: '1rem',
           }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#09090b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <path d="M12 2a10 10 0 0 1 10 10" />
               <path d="M12 6a6 6 0 0 1 6 6" />
@@ -114,9 +115,9 @@ export default function LoginPage({ onLogin }) {
           </div>
 
           <h2 style={{
-            margin: '0 0 6px 0',
-            color: '#ffffff',
-            fontSize: '1.45rem',
+            margin: '0 0 4px 0',
+            color: '#0f172a',
+            fontSize: '1.4rem',
             fontWeight: 800,
             letterSpacing: '-0.3px',
           }}>
@@ -126,20 +127,20 @@ export default function LoginPage({ onLogin }) {
             display: 'inline-block',
             padding: '3px 10px',
             borderRadius: '20px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1px solid rgba(255, 255, 255, 0.16)',
-            fontSize: '0.7rem',
-            color: '#e4e4e7',
+            background: '#e0f2fe',
+            border: '1px solid #bae6fd',
+            fontSize: '0.72rem',
+            color: '#0369a1',
             fontWeight: 700,
-            letterSpacing: '0.8px',
+            letterSpacing: '0.6px',
             textTransform: 'uppercase',
-            marginBottom: '8px',
+            marginBottom: '6px',
           }}>
             Marine Acoustic Intelligence
           </div>
           <p style={{
             margin: '4px 0 0 0',
-            color: '#a1a1aa',
+            color: '#64748b',
             fontSize: '0.82rem',
             lineHeight: 1.4,
           }}>
@@ -149,9 +150,9 @@ export default function LoginPage({ onLogin }) {
 
         {error && (
           <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(239, 68, 68, 0.5)',
-            color: '#f87171',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            color: '#dc2626',
             padding: '10px 14px',
             borderRadius: '8px',
             fontSize: '0.82rem',
@@ -167,7 +168,7 @@ export default function LoginPage({ onLogin }) {
         {/* Form Controls */}
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
           <div>
-            <label style={{ display: 'block', color: '#d4d4d8', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', letterSpacing: '0.3px' }}>
+            <label style={{ display: 'block', color: '#334155', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', letterSpacing: '0.2px' }}>
               OPERATOR IDENTIFIER / EMAIL
             </label>
             <input
@@ -179,10 +180,10 @@ export default function LoginPage({ onLogin }) {
               style={{
                 width: '100%',
                 padding: '11px 14px',
-                background: '#09090b',
-                border: '1px solid #27272a',
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                color: '#ffffff',
+                color: '#0f172a',
                 fontSize: '0.9rem',
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -192,7 +193,7 @@ export default function LoginPage({ onLogin }) {
           </div>
 
           <div>
-            <label style={{ display: 'block', color: '#d4d4d8', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', letterSpacing: '0.3px' }}>
+            <label style={{ display: 'block', color: '#334155', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', letterSpacing: '0.2px' }}>
               SECURITY PASSCODE / KEY
             </label>
             <input
@@ -204,10 +205,10 @@ export default function LoginPage({ onLogin }) {
               style={{
                 width: '100%',
                 padding: '11px 14px',
-                background: '#09090b',
-                border: '1px solid #27272a',
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                color: '#ffffff',
+                color: '#0f172a',
                 fontSize: '0.9rem',
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -217,7 +218,7 @@ export default function LoginPage({ onLogin }) {
           </div>
 
           <div>
-            <label style={{ display: 'block', color: '#d4d4d8', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', letterSpacing: '0.3px' }}>
+            <label style={{ display: 'block', color: '#334155', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', letterSpacing: '0.2px' }}>
               ASSIGNED MISSION ROLE
             </label>
             <select
@@ -226,10 +227,10 @@ export default function LoginPage({ onLogin }) {
               style={{
                 width: '100%',
                 padding: '11px 14px',
-                background: '#09090b',
-                border: '1px solid #27272a',
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                color: '#ffffff',
+                color: '#0f3e78',
                 fontSize: '0.88rem',
                 fontWeight: 600,
                 outline: 'none',
@@ -243,17 +244,17 @@ export default function LoginPage({ onLogin }) {
             </select>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem', color: '#a1a1aa' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
-                style={{ accentColor: '#ffffff' }}
+                style={{ accentColor: '#0f3e78' }}
               />
               Remember Session on this Console
             </label>
-            <span style={{ color: '#d4d4d8', fontWeight: 600 }}>AES-256 Protocol</span>
+            <span style={{ color: '#0369a1', fontWeight: 600 }}>AES-256 Protocol</span>
           </div>
 
           <button
@@ -262,14 +263,14 @@ export default function LoginPage({ onLogin }) {
             style={{
               marginTop: '0.6rem',
               padding: '13px',
-              background: '#ffffff',
+              background: 'linear-gradient(135deg, #07172c 0%, #0f3e78 100%)',
               border: 'none',
               borderRadius: '8px',
-              color: '#09090b',
+              color: '#ffffff',
               fontSize: '0.95rem',
-              fontWeight: 800,
+              fontWeight: 700,
               cursor: loading ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 20px rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 4px 14px rgba(15, 62, 120, 0.3)',
               transition: 'all 0.2s ease',
             }}
           >
@@ -278,8 +279,8 @@ export default function LoginPage({ onLogin }) {
         </form>
 
         {/* Quick Demo Access Badges (For Hackathon Judges) */}
-        <div style={{ marginTop: '1.8rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1.2rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#71717a', fontWeight: 700, letterSpacing: '0.8px', marginBottom: '8px', textAlign: 'center' }}>
+        <div style={{ marginTop: '1.8rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.2rem' }}>
+          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, letterSpacing: '0.8px', marginBottom: '8px', textAlign: 'center' }}>
             QUICK EVALUATOR ACCESS (1-CLICK DEMO LOGIN)
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -288,19 +289,19 @@ export default function LoginPage({ onLogin }) {
               onClick={() => handleQuickPreset('Hydrographic Operations Lead', 'lead.hydrographer@sonarguard.org')}
               style={{
                 padding: '9px 12px',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                color: '#ffffff',
+                color: '#0f172a',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 textAlign: 'left',
-                transition: 'background 0.2s',
+                transition: 'all 0.2s',
               }}
             >
-              <div style={{ color: '#ffffff', fontWeight: 700 }}>Hydrographer Lead</div>
-              <div style={{ color: '#a1a1aa', fontSize: '0.68rem' }}>Full Command Access</div>
+              <div style={{ color: '#0f3e78', fontWeight: 700 }}>Hydrographer Lead</div>
+              <div style={{ color: '#64748b', fontSize: '0.68rem' }}>Full Command Access</div>
             </button>
 
             <button
@@ -308,25 +309,25 @@ export default function LoginPage({ onLogin }) {
               onClick={() => handleQuickPreset('Senior Acoustic Analyst', 'analyst@sonarguard.org')}
               style={{
                 padding: '9px 12px',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                color: '#ffffff',
+                color: '#0f172a',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 textAlign: 'left',
-                transition: 'background 0.2s',
+                transition: 'all 0.2s',
               }}
             >
-              <div style={{ color: '#ffffff', fontWeight: 700 }}>Acoustic Analyst</div>
-              <div style={{ color: '#a1a1aa', fontSize: '0.68rem' }}>Inference &amp; Scoring</div>
+              <div style={{ color: '#059669', fontWeight: 700 }}>Acoustic Analyst</div>
+              <div style={{ color: '#64748b', fontSize: '0.68rem' }}>Inference &amp; Scoring</div>
             </button>
           </div>
         </div>
 
         {/* Footer Security Notice */}
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.68rem', color: '#52525b' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.68rem', color: '#94a3b8' }}>
           Official Marine Acoustic Telemetry &bull; WGS-84 GIS Standard &bull; MongoDB Atlas Cloud
         </div>
       </div>
