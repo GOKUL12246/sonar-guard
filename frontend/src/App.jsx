@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard.jsx';
 import AnalysisStudio from './components/AnalysisStudio.jsx';
 import ReviewQueue from './components/ReviewQueue.jsx';
 import Reports from './components/Reports.jsx';
+import LoginPage from './components/LoginPage.jsx';
 import { fetchContacts, reversePlace, searchPlaces, submitVerification } from './api.js';
 import { GLOBAL_MARINE_REGIONS } from './constants/regions.js';
 
@@ -18,6 +19,15 @@ const TABS = [
 ];
 
 export default function App() {
+  const [authUser, setAuthUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sonar_guard_auth_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (_) {
+      return null;
+    }
+  });
+
   const [tab, setTab] = useState('dashboard');
   const [contacts, setContacts] = useState([]);
   const [places, setPlaces] = useState({});
@@ -154,6 +164,10 @@ export default function App() {
     return () => clearTimeout(t);
   }, [toast]);
 
+  if (!authUser) {
+    return <LoginPage onLogin={(user) => setAuthUser(user)} />;
+  }
+
   return (
     <div className="page">
       <header className="topbar">
@@ -170,8 +184,46 @@ export default function App() {
             <p>SIDE-SCAN SONAR ACOUSTIC INTELLIGENCE &amp; MARINE HAZARD MAPPING</p>
           </div>
         </div>
-        <div className="live-pill">
-          <span className="dot" /> SYSTEM OPERATIONAL · REAL-TIME INFERENCE READY
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="live-pill">
+            <span className="dot" /> SYSTEM OPERATIONAL · READY
+          </div>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.8rem',
+            background: 'rgba(255, 255, 255, 0.08)',
+            padding: '6px 12px',
+            borderRadius: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+          }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#38bdf8' }}>{authUser.role || 'Hydrographic Lead'}</div>
+              <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>{authUser.email}</div>
+            </div>
+            <button
+              onClick={() => {
+                try {
+                  localStorage.removeItem('sonar_guard_auth_user');
+                } catch (_) {}
+                setAuthUser(null);
+              }}
+              style={{
+                background: 'rgba(239, 68, 68, 0.2)',
+                border: '1px solid rgba(239, 68, 68, 0.5)',
+                color: '#fca5a5',
+                padding: '5px 10px',
+                borderRadius: '6px',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </header>
 
