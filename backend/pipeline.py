@@ -81,13 +81,20 @@ def get_pipeline():
     return _pipeline
 
 
-def _encode_jpeg(img: np.ndarray) -> str:
+def _encode_jpeg(img: np.ndarray, quality: int = 80, max_dim: int = 640) -> str:
+    if img is None or img.size == 0:
+        return ""
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-    ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 85])
+    h, w = img.shape[:2]
+    if max(h, w) > max_dim:
+        scale = max_dim / float(max(h, w))
+        img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
+    ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, quality])
     if not ok:
         raise RuntimeError("JPEG encoding failed")
     return base64.b64encode(buf.tobytes()).decode("ascii")
+
 
 
 def _draw_overlays(image: np.ndarray, detections, filter_decisions=None) -> np.ndarray:
@@ -323,11 +330,11 @@ def analyze_image(
     ]
 
     prep_stages_b64 = {
-        "00_raw": _encode_jpeg(source_img),
-        "01_grayscale": _encode_jpeg(prep_res.stages.get("01_grayscale", prep_res.original)),
-        "02_median_denoised": _encode_jpeg(prep_res.stages.get("02_median_filter", prep_res.original)),
-        "04_clahe_enhanced": _encode_jpeg(prep_res.stages.get("04_clahe", prep_res.preprocessed)),
-        "05_final_preprocessed": _encode_jpeg(prep_res.preprocessed),
+        "00_raw": _encode_jpeg(source_img, quality=65, max_dim=220),
+        "01_grayscale": _encode_jpeg(prep_res.stages.get("01_grayscale", prep_res.original), quality=65, max_dim=220),
+        "02_median_denoised": _encode_jpeg(prep_res.stages.get("02_median_filter", prep_res.original), quality=65, max_dim=220),
+        "04_clahe_enhanced": _encode_jpeg(prep_res.stages.get("04_clahe", prep_res.preprocessed), quality=65, max_dim=220),
+        "05_final_preprocessed": _encode_jpeg(prep_res.preprocessed, quality=65, max_dim=220),
     }
 
     return {
@@ -339,12 +346,11 @@ def analyze_image(
         "t_det_ms": round(t_det_ms, 1),
         "model_name": pipe["model_name"],
         "model_classes": pipe["model_classes"],
-        "raw_image_b64": _encode_jpeg(source_img),
-        "preprocessed_image_b64": _encode_jpeg(prep_res.preprocessed),
-        "prep_stages_b64": prep_stages_b64,
-        "annotated_image_b64": _encode_jpeg(annotated),
-        "decisions": decisions,
+        "raw_image_b64": _encode_jpeg(source_img, quality=80, max_dim=640),
+        "preprocessed_image_b64": _encode_jpeg(prep_res.preprocessed, quality=80, max_dim=640),
+        "annotated_image_b64": _encode_jpeg(annotated, quality=80, max_dim=640),
         "contacts": contacts,
-        "report_files": saved_reports,
+        "decisions": decisions,
         "stages": stages,
+        "prep_stages_b64": prep_stages_b64,
     }
