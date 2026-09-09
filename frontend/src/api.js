@@ -40,12 +40,18 @@ export async function analyzeImage(file, params = {}) {
   const form = new FormData();
   form.append('file', file);
   for (const [k, v] of Object.entries(params)) form.append(k, String(v));
-  const res = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: form });
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`analysis failed: ${res.status} ${detail.slice(0, 200)}`);
+  try {
+    const res = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: form });
+    if (!res.ok) {
+      const detail = await res.text();
+      throw new Error(`Analysis error (${res.status}): ${detail.slice(0, 200)}`);
+    }
+    return await res.json();
+  } catch (err) {
+    if (err.message && err.message.includes('Analysis error')) throw err;
+    // Helpful network diagnostic error for presentation
+    throw new Error(`Network Connection Error: Could not reach backend server at "${API_BASE || 'localhost:8000'}". Please ensure the server is running or wait for cloud container wakeup.`);
   }
-  return res.json();
 }
 
 export async function submitVerification(anomalyId, decision, notes = '') {
