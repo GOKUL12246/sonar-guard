@@ -90,8 +90,8 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
                     />
                   ) : (
                     <div style={{ textAlign: 'center', padding: '0.4rem' }}>
-                      <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.5px' }}>ACOUSTIC TARGET</div>
-                      <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#f8fafc', marginTop: '2px' }}>{c.class || 'Contact'}</div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.5px' }}>SONAR TARGET</div>
+                      <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#f8fafc', marginTop: '2px' }}>{c.class || 'Ghost-Net'}</div>
                       <div style={{ fontSize: '0.66rem', color: '#94a3b8', marginTop: '2px' }}>{c.dimensions_text || `${c.length_m || 2.4}m × ${c.width_m || 1.1}m`}</div>
                     </div>
                   )}
@@ -107,7 +107,7 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
                     Source Frame: <code>{c.source_image}</code> · Estimated Footprint: <b>{c.area_m2 || '2.64'} m²</b>
                   </div>
                   <div style={{ fontSize: '0.78rem', color: '#0f3e78', marginTop: '3px', fontWeight: 600 }}>
-                    Telemetry Note: {c.notes || 'Acoustic contact requiring operator validation'}
+                    Telemetry Note: {c.notes || 'Debris target requiring operator validation'}
                   </div>
 
                   {/* Dual Score Bar */}

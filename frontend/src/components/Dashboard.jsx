@@ -37,7 +37,7 @@ export default function Dashboard({
   const classes = [
     { label: 'Ghost-Net', count: ghostNets, color: '#ef4444' },
     { label: 'Crab-Pot', count: crabPots, color: '#f59e0b' },
-    { label: 'Acoustic Debris / Contact', count: generalDebris > 0 ? generalDebris : 0, color: '#0ea5e9' },
+    { label: 'Marine Debris', count: generalDebris > 0 ? generalDebris : 0, color: '#0ea5e9' },
   ];
   const maxClass = Math.max(1, ...classes.map((c) => c.count));
 
