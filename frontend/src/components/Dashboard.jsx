@@ -101,19 +101,19 @@ export default function Dashboard({
             className="primary"
             style={{ padding: '7px 14px', fontSize: '0.8rem' }}
           >
-            Open Analysis Studio
-          </button>
-          <button
-            onClick={() => onNavigate && onNavigate('dataset')}
-            style={{ padding: '7px 14px', fontSize: '0.8rem' }}
-          >
-            Training Scans (5,721)
+            Analysis Studio
           </button>
           <button
             onClick={() => onNavigate && onNavigate('map')}
             style={{ padding: '7px 14px', fontSize: '0.8rem' }}
           >
             Marine GIS Map
+          </button>
+          <button
+            onClick={() => onNavigate && onNavigate('review')}
+            style={{ padding: '7px 14px', fontSize: '0.8rem' }}
+          >
+            Review Queue
           </button>
         </div>
       </div>
@@ -238,14 +238,14 @@ export default function Dashboard({
           <div style={{ textAlign: 'center', padding: '2.5rem 1rem', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
             <h4 style={{ margin: '0 0 0.4rem', color: '#334155' }}>No Acoustic Contacts Uploaded Yet</h4>
             <p style={{ margin: '0 0 1rem', color: '#64748b', fontSize: '0.85rem', maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto' }}>
-              Upload any Side-Scan Sonar (SSS) image or select one of the 5,721 real training dataset frames to run detection and plot contacts.
+              Upload any Side-Scan Sonar (SSS) image in Analysis Studio to run detection, extract physical dimensions, and plot georeferenced contacts.
             </p>
             <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'center' }}>
               <button className="primary" onClick={() => onNavigate && onNavigate('analysis')}>
-                Analyze SSS Image
+                Open Analysis Studio
               </button>
-              <button onClick={() => onNavigate && onNavigate('dataset')}>
-                Browse Dataset Scans
+              <button onClick={() => onNavigate && onNavigate('map')}>
+                Explore Marine GIS Map
               </button>
             </div>
           </div>
