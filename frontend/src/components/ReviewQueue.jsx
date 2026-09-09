@@ -56,6 +56,7 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
         const riskVal = Number(c.marine_risk_score) || 0;
         const artVal = Number(c.artificial_score) || 0;
         const natVal = Number(c.natural_score) || (100 - artVal);
+        const place = (places && places[c.anomaly_id]) || (c.latitude ? `${Number(c.latitude).toFixed(4)}° N, ${Number(c.longitude).toFixed(4)}° E` : 'Offshore Survey Zone');
         const rawImgName = c.source_image || c.image_id || '';
         const imgName = rawImgName.replace(/^.*[\\\/]/, '');
         const imgSrc = c.thumbnail_b64
