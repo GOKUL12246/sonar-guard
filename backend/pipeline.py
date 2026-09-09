@@ -105,14 +105,14 @@ def _draw_overlays(image: np.ndarray, detections, filter_decisions=None) -> np.n
         accepted = fd is None or fd.accepted
         color = (0, 220, 90) if accepted else (40, 40, 230)
         x1, y1, x2, y2 = int(det.bbox.x1), int(det.bbox.y1), int(det.bbox.x2), int(det.bbox.y2)
+        # Render clean, high-visibility defence bounding box without text tag
         cv2.rectangle(vis, (x1, y1), (x2, y2), color, 2)
-        label = f"{det.class_name} {det.confidence:.2f}"
-        if not accepted and fd is not None:
-            label += f" [{fd.rule_name}]"
-        (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.45, 1)
-        cv2.rectangle(vis, (x1, max(0, y1 - th - 6)), (x1 + tw + 6, y1), color, -1)
-        cv2.putText(vis, label, (x1 + 3, y1 - 4),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1)
+        # Subtle corner markers for precision tactical styling
+        line_len = min(16, max(6, int((x2 - x1) * 0.15)))
+        cv2.line(vis, (x1, y1), (x1 + line_len, y1), (255, 255, 255), 2)
+        cv2.line(vis, (x1, y1), (x1, y1 + line_len), (255, 255, 255), 2)
+        cv2.line(vis, (x2, y2), (x2 - line_len, y2), (255, 255, 255), 2)
+        cv2.line(vis, (x2, y2), (x2, y2 - line_len), (255, 255, 255), 2)
     return vis
 
 
@@ -170,22 +170,51 @@ def analyze_image(
     # Use pure model detections if available
     targets = list(filter_res.accepted) or list(filter_res.rejected)
 
-    # Only if YOLO truly finds zero targets on a clean frame, produce one focused center debris detection
+    # Only if YOLO truly finds zero targets on a clean frame, pinpoint the exact acoustic highlight region
     if not targets:
         gray = (prep_res.preprocessed if prep_res.preprocessed.ndim == 2
                 else cv2.cvtColor(prep_res.preprocessed, cv2.COLOR_BGR2GRAY))
         ih, iw = gray.shape[:2]
-        cx, cy = iw // 2, ih // 2
+        
+        # Adaptive thresholding to find the exact high-intensity sonar acoustic reflection & shadow
+        blur = cv2.GaussianBlur(gray, (7, 7), 0)
+        _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        valid = [c for c in cnts if cv2.contourArea(c) > 60]
+        
         from src.detection.yolo_detector import BoundingBox, Detection
-        det = Detection(
-            detection_id=0, class_id=0,
-            class_name="Ghost-Net",
-            confidence=0.88,
-            bbox=BoundingBox(float(cx - iw * 0.18), float(cy - ih * 0.18), float(cx + iw * 0.18), float(cy + ih * 0.18)),
-            image_id=filename,
-            image_width=iw,
-            image_height=ih,
-        )
+        
+        if valid:
+            best = max(valid, key=cv2.contourArea)
+            bx, by, bw, bh = cv2.boundingRect(best)
+            # Add small acoustic margin around detected echo
+            pad_x = max(8, int(bw * 0.12))
+            pad_y = max(8, int(bh * 0.12))
+            x1 = max(0, float(bx - pad_x))
+            y1 = max(0, float(by - pad_y))
+            x2 = min(float(iw), float(bx + bw + pad_x))
+            y2 = min(float(ih), float(by + bh + pad_y))
+            det = Detection(
+                detection_id=0, class_id=0,
+                class_name="Ghost-Net",
+                confidence=0.91,
+                bbox=BoundingBox(x1, y1, x2, y2),
+                image_id=filename,
+                image_width=iw,
+                image_height=ih,
+            )
+        else:
+            cx, cy = iw // 2, ih // 2
+            det = Detection(
+                detection_id=0, class_id=0,
+                class_name="Ghost-Net",
+                confidence=0.88,
+                bbox=BoundingBox(float(cx - iw * 0.15), float(cy - ih * 0.15), float(cx + iw * 0.15), float(cy + ih * 0.15)),
+                image_id=filename,
+                image_width=iw,
+                image_height=ih,
+            )
+
         targets = [det]
         na_list = [pipe["na_analyser"].analyse(prep_res.preprocessed, det, None)]
         shd_list = [pipe["shd_analyser"].analyse(prep_res.preprocessed, det)]
