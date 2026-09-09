@@ -1,45 +1,33 @@
 import { useMemo, useState } from 'react';
-import { API_BASE } from '../api.js';
+
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export default function ReviewQueue({ contacts, places, onVerify, verifyingId }) {
   const [filter, setFilter] = useState('pending');
 
   const items = useMemo(() => {
     let list = [...contacts];
-    if (filter === 'pending') {
-      list = list.filter((c) => {
-        const s = (c.verification_status || 'unverified').toLowerCase();
-        return s === 'unverified' || s === 'pending' || s === 'queued' || !s;
-      });
-    } else if (filter === 'confirmed') {
-      list = list.filter((c) => (c.verification_status || '').toLowerCase() === 'confirmed');
-    } else if (filter === 'rejected') {
-      list = list.filter((c) => (c.verification_status || '').toLowerCase() === 'rejected');
-    } else if (filter === 'rov') {
-      list = list.filter((c) => {
-        const s = (c.verification_status || '').toLowerCase();
-        return s === 'rov_inspection' || s === 'rov';
-      });
-    }
+    if (filter === 'pending')
+      list = list.filter((c) => ['unverified', 'pending'].includes(c.verification_status));
+    else if (filter === 'confirmed') list = list.filter((c) => c.verification_status === 'confirmed');
+    else if (filter === 'rejected') list = list.filter((c) => c.verification_status === 'rejected');
+    else if (filter === 'rov') list = list.filter((c) => c.verification_status === 'rov_inspection');
     return list.sort((a, b) => (Number(b.marine_risk_score) || 0) - (Number(a.marine_risk_score) || 0));
   }, [contacts, filter]);
 
   return (
     <div>
       <div className="controls">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
           <strong>Operator Verification &amp; Active Retraining Queue</strong>
           <span className="step-badge active">{items.length} Contacts</span>
-          <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
-            ({contacts.filter((c) => (c.verification_status || 'unverified') === 'unverified').length} Pending · {contacts.filter((c) => c.verification_status === 'confirmed').length} Confirmed · {contacts.filter((c) => c.verification_status === 'rejected').length} Rejected)
-          </span>
         </div>
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="pending">Pending Review ({contacts.filter((c) => ['unverified', 'pending'].includes(c.verification_status || 'unverified')).length})</option>
+          <option value="pending">Pending Review</option>
           <option value="all">All Contacts ({contacts.length})</option>
-          <option value="confirmed">Confirmed Debris ({contacts.filter((c) => c.verification_status === 'confirmed').length})</option>
-          <option value="rejected">Rejected ({contacts.filter((c) => c.verification_status === 'rejected').length})</option>
-          <option value="rov">ROV Inspection Required ({contacts.filter((c) => c.verification_status === 'rov_inspection').length})</option>
+          <option value="confirmed">Confirmed Debris</option>
+          <option value="rejected">Rejected (False Positives)</option>
+          <option value="rov">ROV Inspection Required</option>
         </select>
       </div>
 
@@ -56,9 +44,8 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
         const riskVal = Number(c.marine_risk_score) || 0;
         const artVal = Number(c.artificial_score) || 0;
         const natVal = Number(c.natural_score) || (100 - artVal);
-        const place = (places && places[c.anomaly_id]) || (c.latitude ? `${Number(c.latitude).toFixed(4)}° N, ${Number(c.longitude).toFixed(4)}° E` : 'Offshore Survey Zone');
-        const rawImgName = c.source_image || c.image_id || '';
-        const imgName = rawImgName.replace(/^.*[\\\/]/, '');
+        const place = places[c.anomaly_id] ?? 'Resolving WGS-84 position…';
+        const imgName = c.source_image ? String(c.source_image).split(/[\\/]/).pop() : null;
         const imgSrc = c.thumbnail_b64
           ? (c.thumbnail_b64.startsWith('data:') ? c.thumbnail_b64 : `data:image/jpeg;base64,${c.thumbnail_b64}`)
           : c.image_b64
@@ -68,7 +55,7 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
           : null;
 
         return (
-          <details key={c.anomaly_id} className="review-item" open>
+          <details key={c.anomaly_id} className="review-item" open={filter === 'pending'}>
             <summary>
               <b>{c.anomaly_id.slice(0, 13)}</b> · {c.class} · Dimensions: <b>{c.dimensions_text || (c.length_m ? `${c.length_m}m × ${c.width_m}m` : '2.4m × 1.1m')}</b> · Art <b>{artVal}%</b> / Nat <b>{natVal}%</b> ·{' '}
               <span className={`risk risk-${(c.marine_risk_band || 'medium').toLowerCase()}`}>
@@ -78,7 +65,7 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
             </summary>
             <div className="review-body">
               <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-                {/* Sonar Preprocessed Contact Preview */}
+                {/* Sonar Thumbnail Preview */}
                 <div
                   style={{
                     width: '140px',
@@ -98,13 +85,13 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
                   {imgSrc ? (
                     <img
                       src={imgSrc}
-                      alt={c.class || 'SSS Acoustic Contact'}
+                      alt={imgName || 'Sonar Contact'}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   ) : (
                     <div style={{ textAlign: 'center', padding: '0.4rem' }}>
-                      <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.5px' }}>SSS TARGET</div>
-                      <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#f8fafc', marginTop: '2px' }}>{c.class || 'Acoustic-Contact'}</div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.5px' }}>ACOUSTIC TARGET</div>
+                      <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#f8fafc', marginTop: '2px' }}>{c.class || 'Contact'}</div>
                       <div style={{ fontSize: '0.66rem', color: '#94a3b8', marginTop: '2px' }}>{c.dimensions_text || `${c.length_m || 2.4}m × ${c.width_m || 1.1}m`}</div>
                     </div>
                   )}
