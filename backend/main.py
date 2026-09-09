@@ -93,6 +93,32 @@ def _normalize_contact(item: dict) -> dict:
         risk = float(item.get("marine_risk_score", 65.0) or 65.0)
     except (TypeError, ValueError):
         risk = 65.0
+    # Auto-generate a fallback thumbnail from dataset image if thumbnail_b64 is missing
+    thumb_b64 = item.get("thumbnail_b64") or item.get("crop_b64") or ""
+    if not thumb_b64:
+        src_img_name = str(item.get("source_image") or item.get("image_id") or "")
+        if src_img_name:
+            for split in ("train", "valid", "test"):
+                p = DATA_RAW_DIR / split / src_img_name
+                if p.exists():
+                    try:
+                        import cv2, base64
+                        im = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
+                        if im is not None:
+                            im_res = cv2.resize(im, (180, 140), interpolation=cv2.INTER_AREA)
+                            _, buf = cv2.imencode(".jpg", im_res, [cv2.IMWRITE_JPEG_QUALITY, 70])
+                            thumb_b64 = base64.b64encode(buf.tobytes()).decode("ascii")
+                            break
+                    except Exception:
+                        pass
+
+    dim_text = item.get("dimensions_text") or ""
+    l_m = item.get("length_m")
+    w_m = item.get("width_m")
+    area_m2 = item.get("area_m2")
+    if not dim_text and l_m and w_m:
+        dim_text = f"{l_m}m × {w_m}m"
+
     return {
         "anomaly_id": str(item.get("anomaly_id") or "OBS-?"),
         "timestamp_utc": str(item.get("timestamp_utc") or datetime.now(timezone.utc).isoformat()),
@@ -106,9 +132,14 @@ def _normalize_contact(item: dict) -> dict:
         "longitude": item.get("longitude"),
         "depth_m": float(item.get("depth_m") or 28.5),
         "shadow_detected": bool(item.get("shadow_detected", True)),
+        "length_m": l_m,
+        "width_m": w_m,
+        "area_m2": area_m2,
+        "dimensions_text": dim_text,
         "verification_status": str(item.get("verification_status") or "unverified"),
         "notes": str(item.get("notes") or "Acoustic debris contact validated against training telemetry"),
         "source_image": str(item.get("source_image") or item.get("image_id") or "survey.jpg"),
+        "thumbnail_b64": thumb_b64,
     }
 
 

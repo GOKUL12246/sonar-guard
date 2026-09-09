@@ -45,12 +45,11 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
         const artVal = Number(c.artificial_score) || 0;
         const natVal = Number(c.natural_score) || (100 - artVal);
         const place = places[c.anomaly_id] ?? 'Resolving WGS-84 position…';
-        const imgName = c.source_image || '';
         const imgSrc = c.thumbnail_b64
           ? (c.thumbnail_b64.startsWith('data:') ? c.thumbnail_b64 : `data:image/jpeg;base64,${c.thumbnail_b64}`)
           : c.image_b64
           ? (c.image_b64.startsWith('data:') ? c.image_b64 : `data:image/jpeg;base64,${c.image_b64}`)
-          : imgName && imgName.endsWith('.jpg')
+          : imgName
           ? `${API_BASE}/api/dataset/image/train/${imgName}`
           : null;
 
@@ -68,31 +67,31 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
                 {/* Sonar Thumbnail Preview */}
                 <div
                   style={{
-                    width: '135px',
-                    height: '110px',
-                    background: '#0b192e',
+                    width: '140px',
+                    height: '115px',
+                    background: '#071529',
                     borderRadius: '8px',
                     overflow: 'hidden',
                     flexShrink: 0,
                     border: '1px solid #1e3a8a',
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    position: 'relative',
                   }}
                 >
                   {imgSrc ? (
                     <img
                       src={imgSrc}
                       alt={imgName || 'Sonar Contact'}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   ) : (
-                    <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.72rem', padding: '0.3rem' }}>
-                      <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: '2px' }}>SSS TARGET</div>
-                      <div style={{ color: '#cbd5e1' }}>{c.class || 'Contact'}</div>
+                    <div style={{ textAlign: 'center', padding: '0.4rem' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.5px' }}>ACOUSTIC TARGET</div>
+                      <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#f8fafc', marginTop: '2px' }}>{c.class || 'Contact'}</div>
+                      <div style={{ fontSize: '0.66rem', color: '#94a3b8', marginTop: '2px' }}>{c.dimensions_text || `${c.length_m || 2.4}m × ${c.width_m || 1.1}m`}</div>
                     </div>
                   )}
                 </div>
