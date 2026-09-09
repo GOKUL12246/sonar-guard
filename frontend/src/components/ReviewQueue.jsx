@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-
-const API_BASE = import.meta.env.VITE_API_URL || '';
+import { API_BASE } from '../api.js';
 
 export default function ReviewQueue({ contacts, places, onVerify, verifyingId }) {
   const [filter, setFilter] = useState('pending');
