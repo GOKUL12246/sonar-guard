@@ -44,7 +44,8 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
         const riskVal = Number(c.marine_risk_score) || 0;
         const artVal = Number(c.artificial_score) || 0;
         const natVal = Number(c.natural_score) || (100 - artVal);
-        const place = places[c.anomaly_id] ?? 'Resolving WGS-84 position…';
+        const rawImgName = c.source_image || c.image_id || '';
+        const imgName = rawImgName.replace(/^.*[\\\/]/, '');
         const imgSrc = c.thumbnail_b64
           ? (c.thumbnail_b64.startsWith('data:') ? c.thumbnail_b64 : `data:image/jpeg;base64,${c.thumbnail_b64}`)
           : c.image_b64
@@ -64,7 +65,7 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
             </summary>
             <div className="review-body">
               <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-                {/* Sonar Thumbnail Preview */}
+                {/* Sonar Preprocessed Contact Preview */}
                 <div
                   style={{
                     width: '140px',
@@ -84,13 +85,13 @@ export default function ReviewQueue({ contacts, places, onVerify, verifyingId })
                   {imgSrc ? (
                     <img
                       src={imgSrc}
-                      alt={imgName || 'Sonar Contact'}
+                      alt={c.class || 'SSS Acoustic Contact'}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   ) : (
                     <div style={{ textAlign: 'center', padding: '0.4rem' }}>
-                      <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.5px' }}>ACOUSTIC TARGET</div>
-                      <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#f8fafc', marginTop: '2px' }}>{c.class || 'Contact'}</div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.5px' }}>SSS TARGET</div>
+                      <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#f8fafc', marginTop: '2px' }}>{c.class || 'Acoustic-Contact'}</div>
                       <div style={{ fontSize: '0.66rem', color: '#94a3b8', marginTop: '2px' }}>{c.dimensions_text || `${c.length_m || 2.4}m × ${c.width_m || 1.1}m`}</div>
                     </div>
                   )}

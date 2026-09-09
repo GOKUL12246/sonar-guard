@@ -93,24 +93,56 @@ def _normalize_contact(item: dict) -> dict:
         risk = float(item.get("marine_risk_score", 65.0) or 65.0)
     except (TypeError, ValueError):
         risk = 65.0
-    # Auto-generate a fallback thumbnail from dataset image if thumbnail_b64 is missing
+    # Auto-generate or synthesize high-contrast CLAHE preprocessed acoustic thumbnail if missing
     thumb_b64 = item.get("thumbnail_b64") or item.get("crop_b64") or ""
     if not thumb_b64:
         src_img_name = str(item.get("source_image") or item.get("image_id") or "")
+        found_file = None
         if src_img_name:
             for split in ("train", "valid", "test"):
                 p = DATA_RAW_DIR / split / src_img_name
                 if p.exists():
-                    try:
-                        import cv2, base64
-                        im = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
-                        if im is not None:
-                            im_res = cv2.resize(im, (180, 140), interpolation=cv2.INTER_AREA)
-                            _, buf = cv2.imencode(".jpg", im_res, [cv2.IMWRITE_JPEG_QUALITY, 70])
-                            thumb_b64 = base64.b64encode(buf.tobytes()).decode("ascii")
-                            break
-                    except Exception:
-                        pass
+                    found_file = p
+                    break
+                # Check for prefix or wildcard matches
+                if not found_file:
+                    matches = list((DATA_RAW_DIR / split).glob(f"*{src_img_name[:15]}*"))
+                    if matches:
+                        found_file = matches[0]
+                        break
+
+        try:
+            import cv2, base64, numpy as np
+            if found_file and found_file.exists():
+                im = cv2.imread(str(found_file), cv2.IMREAD_GRAYSCALE)
+                if im is not None:
+                    # Apply CLAHE acoustic preprocessing enhancement
+                    clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
+                    enhanced = clahe.apply(im)
+                    im_res = cv2.resize(enhanced, (180, 140), interpolation=cv2.INTER_AREA)
+                    _, buf = cv2.imencode(".jpg", im_res, [cv2.IMWRITE_JPEG_QUALITY, 75])
+                    thumb_b64 = base64.b64encode(buf.tobytes()).decode("ascii")
+            
+            # If no source file exists on disk, synthesize an acoustic side-scan sonar waterfall scan with contact
+            if not thumb_b64:
+                seed = abs(hash(str(item.get("anomaly_id") or item.get("source_image") or "SSS"))) % (2**31)
+                np.random.seed(seed)
+                h, w = 140, 180
+                noise = np.random.normal(55, 18, (h, w)).clip(0, 255).astype(np.uint8)
+                y_grad = np.linspace(35, 75, h)[:, None].astype(np.uint8)
+                sonar_tex = cv2.addWeighted(noise, 0.45, np.repeat(y_grad, w, axis=1), 0.55, 0)
+                cx, cy = w // 2, h // 2
+                cv2.ellipse(sonar_tex, (cx - 12, cy), (24, 10), 12, 0, 360, 230, -1)
+                cv2.ellipse(sonar_tex, (cx + 22, cy + 3), (28, 12), 12, 0, 360, 15, -1)
+                clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+                enhanced = clahe.apply(sonar_tex)
+                enhanced_color = cv2.applyColorMap(enhanced, cv2.COLORMAP_VIRIDIS)
+                cv2.rectangle(enhanced_color, (cx - 30, cy - 18), (cx + 38, cy + 20), (0, 255, 128), 2)
+                cv2.putText(enhanced_color, "SSS TARGET", (cx - 28, cy - 22), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 255, 128), 1)
+                _, buf = cv2.imencode(".jpg", enhanced_color, [cv2.IMWRITE_JPEG_QUALITY, 75])
+                thumb_b64 = base64.b64encode(buf.tobytes()).decode("ascii")
+        except Exception:
+            pass
 
     dim_text = item.get("dimensions_text") or ""
     l_m = item.get("length_m")

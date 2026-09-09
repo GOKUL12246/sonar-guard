@@ -119,7 +119,15 @@ export default function MapView({ contacts, center, activeBands, onVerify, verif
                 <strong>
                   {c.anomaly_id.slice(0, 13)} — {c.class}
                 </strong>
-                <div className="popup-place">{place}</div>
+                {c.thumbnail_b64 && (
+                  <div style={{ margin: '6px 0', borderRadius: '6px', overflow: 'hidden', border: '1px solid #0f3e78', maxHeight: '110px' }}>
+                    <img
+                      src={c.thumbnail_b64.startsWith('data:') ? c.thumbnail_b64 : `data:image/jpeg;base64,${c.thumbnail_b64}`}
+                      alt={c.class || 'SSS Acoustic Contact'}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  </div>
+                )}
                 <div>
                   Dimensions: <b>{c.dimensions_text || (c.length_m ? `${c.length_m}m × ${c.width_m}m` : '2.4m × 1.1m')}</b>
                 </div>
