@@ -1,24 +1,13 @@
-const DEFAULT_REMOTE_API = 'https://sonar-guard.onrender.com';
+// Auto-detect production vs local Vite dev proxy
+const isLocalhost = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1'
+);
 
-export const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  (typeof window !== 'undefined' &&
-  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? ''
-    : DEFAULT_REMOTE_API);
+const API_BASE = import.meta.env.VITE_API_URL || (isLocalhost ? '' : 'https://sonar-guard.onrender.com');
 
 export async function fetchContacts(limit = 500) {
-  let res;
-  try {
-    res = await fetch(`${API_BASE}/api/contacts?limit=${limit}`);
-  } catch (err) {
-    // If local fetch fails or times out, fallback to live Render cloud backend
-    if (API_BASE !== DEFAULT_REMOTE_API) {
-      res = await fetch(`${DEFAULT_REMOTE_API}/api/contacts?limit=${limit}`);
-    } else {
-      throw err;
-    }
-  }
+  const res = await fetch(`${API_BASE}/api/contacts?limit=${limit}`);
   if (!res.ok) throw new Error(`contacts failed: ${res.status}`);
   const data = await res.json();
   return data.contacts ?? [];
