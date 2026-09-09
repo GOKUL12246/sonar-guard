@@ -88,7 +88,7 @@ export async function analyzeImage(file, params = {}) {
 }
 
 export async function submitVerification(anomalyId, decision, notes = '') {
-  const res = await fetch(`${API_BASE}/api/verify`, {
+  const res = await smartFetch('/api/verify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ anomaly_id: anomalyId, decision, notes }),
@@ -101,19 +101,19 @@ export async function submitVerification(anomalyId, decision, notes = '') {
 }
 
 export async function fetchDatasetSummary() {
-  const res = await fetch(`${API_BASE}/api/dataset/summary`);
+  const res = await smartFetch('/api/dataset/summary');
   if (!res.ok) throw new Error(`dataset summary failed: ${res.status}`);
   return res.json();
 }
 
 export async function fetchDatasetSamples(split = 'train', limit = 30, offset = 0) {
-  const res = await fetch(`${API_BASE}/api/dataset/samples?split=${split}&limit=${limit}&offset=${offset}`);
+  const res = await smartFetch(`/api/dataset/samples?split=${split}&limit=${limit}&offset=${offset}`);
   if (!res.ok) throw new Error(`dataset samples failed: ${res.status}`);
   return res.json();
 }
 
 export async function processDatasetSample(payload) {
-  const res = await fetch(`${API_BASE}/api/dataset/process_sample`, {
+  const res = await smartFetch('/api/dataset/process_sample', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -128,7 +128,7 @@ export async function processDatasetSample(payload) {
 export async function parseMetadataFile(file) {
   const form = new FormData();
   form.append('file', file);
-  const res = await fetch(`${API_BASE}/api/metadata/parse`, { method: 'POST', body: form });
+  const res = await smartFetch('/api/metadata/parse', { method: 'POST', body: form });
   if (!res.ok) {
     const detail = await res.text();
     throw new Error(`metadata parsing failed: ${res.status} ${detail.slice(0, 160)}`);
